@@ -34,6 +34,14 @@ agentstack run meme_crypto_research "Research BONK on Solana"
 agentstack ui      # or chat with it in the browser
 ```
 
+### No platform? Run it straight from the terminal
+`run_local.py` uses the same tools and analyst prompt, with Claude via the official Anthropic SDK
+(plus Claude's built-in web search instead of DuckDuckGo):
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...      # console.anthropic.com
+uv run research "What meme coins are trending right now?"
+```
+
 Optional: set `COINGECKO_API_KEY` (free "Demo" key at coingecko.com/api) for higher rate limits.
 
 Run the offline tests (no network or LLM needed): `uv run pytest`
