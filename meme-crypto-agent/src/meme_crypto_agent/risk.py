@@ -100,6 +100,9 @@ def score_pair(pair: dict[str, Any], now_ms: float | None = None) -> RiskReport:
     if buys > 50 and sells == 0:
         score += 25
         flags.append(f"{buys} buys and 0 sells in 24h - classic honeypot signature")
+    elif sells > 100 and sells > 5 * buys:
+        score += 30
+        flags.append(f"Heavy dumping: {sells} sells vs {buys} buys in 24h ({sells / max(buys, 1):.0f}:1)")
     elif sells and buys < 0.5 * sells:
         score += 10
         flags.append(f"Sellers dominate 24h flow ({buys} buys vs {sells} sells)")

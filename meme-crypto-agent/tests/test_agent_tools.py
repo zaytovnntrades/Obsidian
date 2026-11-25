@@ -58,6 +58,13 @@ def test_fresh_thin_honeypot_is_high_risk():
         assert needle in text, needle
 
 
+def test_heavy_dumping_is_not_lower_risk():
+    # Real case seen live: 911 buys vs 27,288 sells on a $36k-liquidity pool.
+    r = score_pair(pair(liquidity={"usd": 36_500}, txns={"h24": {"buys": 911, "sells": 27_288}}), now_ms=NOW)
+    assert r.level != "LOWER"
+    assert any("Heavy dumping" in f for f in r.flags)
+
+
 def test_missing_fields_do_not_crash():
     r = score_pair({}, now_ms=NOW)
     assert 0 <= r.score <= 100

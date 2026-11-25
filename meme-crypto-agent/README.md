@@ -49,7 +49,8 @@ This is your rulebook as code. Each rule adds points; 0–29 = LOWER, 30–59 = 
 | FDV > 50× liquidity | Valuation has no exit depth | +15 |
 | 24h volume > 10× liquidity | Wash trading / bot churn | +10 |
 | Many buys, **0 sells** | Honeypot signature: you can buy, you can't sell | +25 |
-| Sells > 2× buys | Distribution / dumping | +10 |
+| Sells > 5× buys (100+ sells) | Heavy dumping | +30 |
+| Sells > 2× buys | Distribution / selling pressure | +10 |
 | +300% in 24h | You'd be buying after the move | +10 |
 | No website or socials | Low-effort launch | +10 |
 
