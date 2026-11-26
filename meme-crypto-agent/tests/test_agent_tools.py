@@ -116,3 +116,49 @@ async def test_market_overview():
     )
     out = json.loads((await tool.run({"category": "meme-token"})).get_text_content())
     assert out["coins"][0]["id"] == "dogecoin" and "junk" not in out["coins"][0]
+
+
+# ------------------------------------------------------------------ second opinion
+
+
+def test_critic_message_contains_question_and_report():
+    from meme_crypto_agent.critic import CRITIC_INSTRUCTIONS, build_critic_message
+
+    msg = build_critic_message("Research WIF", "**Snapshot** WIF at $1.23")
+    assert "<question>" in msg and "Research WIF" in msg
+    assert "<report>" in msg and "$1.23" in msg
+    for heading in ("Verdict", "Numbers Check", "Missed or Softened Red Flags", "Strongest Counter-Argument"):
+        assert heading in CRITIC_INSTRUCTIONS
+
+
+def test_agents_import_and_share_second_opinion():
+    from meme_crypto_agent import agent, run_local
+
+    assert agent.SECOND_OPINION in (True, False)
+    assert callable(run_local.research)
+
+
+async def test_research_runs_critic_on_report_and_skips_on_refusal(monkeypatch):
+    from meme_crypto_agent import run_local
+
+    calls = []
+
+    async def fake_run(client, system, content):
+        calls.append((system, content))
+        return "REPORT" if len(calls) == 1 else "REVIEW"
+
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "dummy")
+    monkeypatch.setattr(run_local, "_run", fake_run)
+    out = await run_local.research("Research WIF")
+    assert out.startswith("REPORT") and "## Second Opinion" in out and out.endswith("REVIEW")
+    assert "REPORT" in calls[1][1] and "Research WIF" in calls[1][1]  # critic sees question + report
+
+    calls.clear()
+
+    async def refused(client, system, content):
+        calls.append(1)
+        return "The model declined this request."
+
+    monkeypatch.setattr(run_local, "_run", refused)
+    assert "Second Opinion" not in await run_local.research("x")
+    assert len(calls) == 1

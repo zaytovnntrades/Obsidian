@@ -37,6 +37,7 @@ from beeai_framework.errors import FrameworkError
 from beeai_framework.tools.search.duckduckgo import DuckDuckGoSearchTool
 from beeai_framework.tools.think import ThinkTool
 
+from meme_crypto_agent.critic import CRITIC_INSTRUCTIONS, build_critic_message
 from meme_crypto_agent.tools import MarketOverviewTool, TokenLookupTool, TrendingTool
 
 INSTRUCTIONS = dedent(
@@ -64,6 +65,8 @@ INSTRUCTIONS = dedent(
     End every research answer with: "Research only - not financial advice. Most meme coins go to zero."
     """
 )
+
+SECOND_OPINION = os.getenv("SECOND_OPINION", "true").lower() == "true"
 
 server = Server()
 
@@ -119,28 +122,44 @@ async def meme_crypto_research(
     llm = AgentStackChatModel(parameters=ChatModelParameters(stream=True))
     llm.set_context(llm_ext)
 
-    agent = RequirementAgent(
-        llm=llm,
-        tools=[TokenLookupTool(), TrendingTool(), MarketOverviewTool(), DuckDuckGoSearchTool(), ThinkTool()],
-        instructions=INSTRUCTIONS,
-    )
+    def make_agent(instructions: str) -> RequirementAgent:
+        tools = [TokenLookupTool(), TrendingTool(), MarketOverviewTool(), DuckDuckGoSearchTool(), ThinkTool()]
+        return RequirementAgent(llm=llm, tools=tools, instructions=instructions)
 
-    final: AssistantMessage | None = None
-    try:
-        async for event, _meta in agent.run(messages):
-            match event:
-                case RequirementAgentFinalAnswerEvent(delta=delta):
-                    yield delta
-                case RequirementAgentSuccessEvent(state=state):
-                    final = state.answer
-                    step = state.steps[-1]
-                    if step.tool and step.tool.name != FinalAnswerTool.name:
-                        yield trajectory.trajectory_metadata(title=step.tool.name, content=str(step.input)[:500])
-    except FrameworkError as err:
-        raise RuntimeError(err.explain()) from err
+    async def run_pass(agent: RequirementAgent, pass_messages, result: list[str]):
+        """Stream one agent pass; append its final text to `result`."""
+        try:
+            async for event, _meta in agent.run(pass_messages):
+                match event:
+                    case RequirementAgentFinalAnswerEvent(delta=delta):
+                        yield delta
+                    case RequirementAgentSuccessEvent(state=state):
+                        if state.answer:
+                            result[:] = [state.answer.text]
+                        step = state.steps[-1]
+                        if step.tool and step.tool.name != FinalAnswerTool.name:
+                            yield trajectory.trajectory_metadata(title=step.tool.name, content=str(step.input)[:500])
+        except FrameworkError as err:
+            raise RuntimeError(err.explain()) from err
 
-    if final:
-        await context.store(AgentMessage(text=final.text))
+    report: list[str] = []
+    async for chunk in run_pass(make_agent(INSTRUCTIONS), messages, report):
+        yield chunk
+    full_text = report[0] if report else ""
+
+    if report and SECOND_OPINION:
+        question = get_message_text(input)
+        divider = "\n\n---\n\n## Second Opinion\n\n"
+        yield divider
+        review: list[str] = []
+        critic_messages = [UserMessage(build_critic_message(question, report[0]))]
+        async for chunk in run_pass(make_agent(CRITIC_INSTRUCTIONS), critic_messages, review):
+            yield chunk
+        if review:
+            full_text += divider + review[0]
+
+    if full_text:
+        await context.store(AgentMessage(text=full_text))
 
 
 def serve() -> None:

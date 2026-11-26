@@ -4,6 +4,7 @@ Same tools and same analyst instructions as agent.py, with Claude via the offici
 
     export ANTHROPIC_API_KEY=...        # https://console.anthropic.com
     uv run research "What meme coins are trending right now?"
+    uv run research --no-second-opinion "Research WIF"     # skip the critic pass
 """
 
 from __future__ import annotations
@@ -15,6 +16,7 @@ import sys
 import anthropic
 from anthropic import beta_async_tool
 
+from meme_crypto_agent.critic import CRITIC_INSTRUCTIONS, build_critic_message
 from meme_crypto_agent.tools import MarketOverviewTool, TokenLookupTool, TrendingTool
 
 MODEL = "claude-opus-5-5"
@@ -68,12 +70,11 @@ async def market_overview(coin_ids: list[str] | None = None, category: str | Non
     return await _call(MarketOverviewTool(), coin_ids=coin_ids, category=category, limit=max(1, min(limit, 50)))
 
 
-async def research(question: str) -> str:
-    client = anthropic.AsyncAnthropic()
+async def _run(client: anthropic.AsyncAnthropic, system: str, content: str) -> str:
     runner = client.beta.messages.tool_runner(
         model=MODEL,
         max_tokens=16000,
-        system=_instructions(),
+        system=system,
         output_config={"effort": "high"},
         betas=["server-side-fallback-2026-07-01"],
         fallbacks="default",  # if a safety classifier declines, the API retries on a suitable model
@@ -83,7 +84,7 @@ async def research(question: str) -> str:
             market_overview,
             {"type": "web_search_20260209", "name": "web_search", "max_uses": 5},
         ],
-        messages=[{"role": "user", "content": question}],
+        messages=[{"role": "user", "content": content}],
     )
     final = None
     async for message in runner:
@@ -100,9 +101,22 @@ async def research(question: str) -> str:
     return "".join(b.text for b in final.content if b.type == "text")
 
 
+async def research(question: str, second_opinion: bool = True) -> str:
+    client = anthropic.AsyncAnthropic()
+    print("[1/2] Research pass" if second_opinion else "[1/1] Research pass", file=sys.stderr)
+    report = await _run(client, _instructions(), question)
+    if not second_opinion or report in ("(no response)", "The model declined this request."):
+        return report
+    print("[2/2] Second-opinion pass", file=sys.stderr)
+    review = await _run(client, CRITIC_INSTRUCTIONS, build_critic_message(question, report))
+    return f"{report}\n\n---\n\n## Second Opinion\n\n{review}"
+
+
 def main() -> None:
-    question = " ".join(sys.argv[1:]) or "What meme coins are trending right now?"
-    print(asyncio.run(research(question)))
+    args = sys.argv[1:]
+    second_opinion = "--no-second-opinion" not in args
+    question = " ".join(a for a in args if a != "--no-second-opinion") or "What meme coins are trending right now?"
+    print(asyncio.run(research(question, second_opinion=second_opinion)))
 
 
 if __name__ == "__main__":

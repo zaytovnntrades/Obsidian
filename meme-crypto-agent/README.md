@@ -46,6 +46,15 @@ Optional: set `COINGECKO_API_KEY` (free "Demo" key at coingecko.com/api) for hig
 
 Run the offline tests (no network or LLM needed): `uv run pytest`
 
+## Second-opinion mode (on by default)
+After the research report, a second pass with an adversarial brief (`critic.py`) re-checks the numbers
+with the same tools, hunts for missed red flags, and argues the other side. It ends with a **Verdict**
+(AGREE / PARTLY AGREE / DISAGREE). When the two passes disagree, slow down: that's your signal.
+
+- Terminal: `uv run research --no-second-opinion "..."` skips it.
+- Agent Stack: set `SECOND_OPINION=false` to skip it.
+- Cost: roughly doubles tokens per question. Worth it before money moves; skip it for quick lookups.
+
 ## The red-flag scorer (`src/meme_crypto_agent/risk.py`)
 
 This is your rulebook as code. Each rule adds points; 0–29 = LOWER, 30–59 = ELEVATED, 60+ = HIGH.
