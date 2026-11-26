@@ -1,0 +1,55 @@
+{
+  "defuddle": {
+    "repo": "https://github.com/obsidianmd/obsidian-skills.git",
+    "ref": null,
+    "commit": "9c9560a870fd490b0e1a847f2c8401a50e2d931d",
+    "path": "plugins/obsidian/skills/defuddle",
+    "description": "Extract clean Markdown from HTML pages with Defuddle CLI."
+  },
+  "json-canvas": {
+    "repo": "https://github.com/obsidianmd/obsidian-skills.git",
+    "ref": null,
+    "commit": "9c9560a870fd490b0e1a847f2c8401a50e2d931d",
+    "path": "plugins/obsidian/skills/json-canvas",
+    "description": "Create and edit JSON Canvas files (.canvas) with nodes, edges, groups, and connections. Use when working with .canvas files, creating visual canvases, mind maps, flowcharts, or when the user mentions Canvas files in Obsidian."
+  },
+  "knap": {
+    "repo": "https://github.com/obsidianmd/obsidian-skills.git",
+    "ref": null,
+    "commit": "9c9560a870fd490b0e1a847f2c8401a50e2d931d",
+    "path": "plugins/obsidian/skills/knap",
+    "description": "Render Markdown from templates and structured data using Knap CLI. Use when the user asks to apply a Knap template, turn JSON or CSV data into notes, batch-generate Markdown files, or format Defuddle output into a note."
+  },
+  "obsidian-bases": {
+    "repo": "https://github.com/obsidianmd/obsidian-skills.git",
+    "ref": null,
+    "commit": "9c9560a870fd490b0e1a847f2c8401a50e2d931d",
+    "path": "plugins/obsidian/skills/obsidian-bases",
+    "description": "Create and edit Obsidian Bases (.base files) with views, filters, formulas, and summaries. Use when working with .base files, creating database-like views of notes, or when the user mentions Bases, table views, card views, kanban boards, filters, or formulas in Obsidian."
+  },
+  "obsidian-cli": {
+    "repo": "https://github.com/obsidianmd/obsidian-skills.git",
+    "ref": null,
+    "commit": "9c9560a870fd490b0e1a847f2c8401a50e2d931d",
+    "path": "plugins/obsidian/skills/obsidian-cli",
+    "description": "Interact with Obsidian vaults using the Obsidian CLI to read, create, search, and manage notes, tasks, properties, and more. Also supports plugin and theme development with commands to reload plugins, run JavaScript, capture errors, take screenshots, and inspect the DOM. Use when the user asks to in"
+  },
+  "obsidian-headless": {
+    "repo": "https://github.com/obsidianmd/obsidian-skills.git",
+    "ref": null,
+    "commit": "9c9560a870fd490b0e1a847f2c8401a50e2d931d",
+    "path": "plugins/obsidian/skills/obsidian-headless",
+    "description": "Sync and publish Obsidian vaults from the command line with Obsidian Headless (`ob`), without the desktop app. Use when the user wants to set up or run Obsidian Sync or Obsidian Publish on a server, in CI, or from a terminal, or change a vault's Sync or Publish settings."
+  },
+  "obsidian-markdown": {
+    "repo": "https://github.com/obsidianmd/obsidian-skills.git",
+    "ref": null,
+    "commit": "9c9560a870fd490b0e1a847f2c8401a50e2d931d",
+    "path": "plugins/obsidian/skills/obsidian-markdown",
+    "description": "Create and edit Obsidian Flavored Markdown with wikilinks, embeds, callouts, properties, and other Obsidian-specific syntax. Use when working with .md files in Obsidian, or when the user mentions wikilinks, callouts, frontmatter, tags, embeds, or Obsidian notes."
+  },
+  "research-desk": {
+    "repo": "local",
+    "description": "Run the multi-agent crypto research desk - researcher, critic, clipper and vault writer - on tickers, contracts, a public Solana wallet, or \"what's trending\", and file the results as Obsidian notes. Use when the user asks to research coins into the vault, run the desk, or update the watchlist."
+  }
+}

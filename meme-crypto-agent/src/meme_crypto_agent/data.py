@@ -133,3 +133,21 @@ async def dex_best_pairs(client: httpx.AsyncClient, chain_id: str, mints: list[s
             if current is None or liq > ((current.get("liquidity") or {}).get("usd") or 0):
                 best[mint] = pair
     return best
+
+
+# ---------------------------------------------------------------- canonical contract resolution
+
+# CoinGecko platform ids -> DexScreener chain ids
+GECKO_TO_DEX_CHAIN = {"binance-smart-chain": "bsc", "polygon-pos": "polygon", "arbitrum-one": "arbitrum"}
+
+
+async def gecko_search(client: httpx.AsyncClient, query: str) -> list[dict[str, Any]]:
+    data = await _get_json(client, f"{COINGECKO}/search", {"query": query})
+    return data.get("coins") or []
+
+
+async def gecko_platforms(client: httpx.AsyncClient, coin_id: str) -> dict[str, str]:
+    params = {"localization": "false", "tickers": "false", "market_data": "false",
+              "community_data": "false", "developer_data": "false"}
+    data = await _get_json(client, f"{COINGECKO}/coins/{coin_id}", params)
+    return {GECKO_TO_DEX_CHAIN.get(k, k): v for k, v in (data.get("platforms") or {}).items() if k and v}

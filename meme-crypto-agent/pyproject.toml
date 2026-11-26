@@ -16,6 +16,7 @@ dependencies = [
 [project.scripts]
 server = "meme_crypto_agent.agent:serve"
 research = "meme_crypto_agent.run_local:main"
+tools = "meme_crypto_agent.cli:main"
 
 [dependency-groups]
 dev = ["pytest>=8", "pytest-asyncio>=0.24"]

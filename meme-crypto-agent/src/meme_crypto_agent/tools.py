@@ -67,24 +67,60 @@ class TokenLookupTool(_BaseTool):
     async def _run(
         self, input: TokenLookupInput, options: ToolRunOptions | None, context: RunContext
     ) -> JSONToolOutput[dict[str, Any]]:
+        chain = input.chain.lower() if input.chain else None
         async with self._client_factory() as client:
             pairs = await data.dex_search(client, input.query)
-        if input.chain:
-            pairs = [p for p in pairs if p.get("chainId") == input.chain.lower()]
+            canonical = await self._canonical_pair(client, input.query, chain)
+        if chain:
+            pairs = [p for p in pairs if p.get("chainId") == chain]
         pairs.sort(key=lambda p: (p.get("liquidity") or {}).get("usd") or 0, reverse=True)
+
+        canonical_address = None
+        if canonical:
+            pair, coin = canonical
+            canonical_address = (pair.get("baseToken") or {}).get("address")
+            pairs = [pair] + [p for p in pairs if (p.get("baseToken") or {}).get("address") != canonical_address]
 
         results = []
         for pair in pairs[: input.limit]:
             summary = summarize_pair(pair)
             summary["verify_links"] = verify_links(summary["chain"], summary["token_address"])
+            if canonical_address and summary["token_address"] == canonical_address:
+                summary["canonical"] = {"source": "CoinGecko", "id": coin["id"], "market_cap_rank": coin.get("market_cap_rank")}
             results.append(summary)
 
-        note = (
-            "Multiple tokens share tickers. Copycats are common - confirm the contract address."
-            if len({r["token_address"] for r in results}) > 1
-            else None
-        )
+        note = None
+        if len({r["token_address"] for r in results}) > 1:
+            note = "Multiple tokens share this ticker. Copycats are common - confirm the contract address."
+            if canonical_address:
+                note += " The first result is the CoinGecko-listed contract; the rest are OTHER tokens."
         return JSONToolOutput({"query": input.query, "count": len(results), "pairs": results, "note": note})
+
+    async def _canonical_pair(self, client, query: str, chain: str | None):
+        """For a ticker like 'WIF', find the CoinGecko-listed contract and its most liquid DEX pair.
+
+        DexScreener search ranks by text match, so for popular tickers it can return only tiny copycats
+        and miss the real coin. CoinGecko's listing is the tie-breaker.
+        """
+        symbol = query.strip().lstrip("$").lower()
+        if len(symbol) > 15 or " " in symbol or len(query) >= 32:  # looks like a name or an address
+            return None
+        try:
+            coins = [c for c in await data.gecko_search(client, symbol)
+                     if (c.get("symbol") or "").lstrip("$").lower() == symbol and c.get("market_cap_rank")]
+            if not coins:
+                return None
+            coin = min(coins, key=lambda c: c["market_cap_rank"])
+            platforms = await data.gecko_platforms(client, coin["id"])
+            for dex_chain, address in platforms.items():
+                if chain and dex_chain != chain:
+                    continue
+                best = (await data.dex_best_pairs(client, dex_chain, [address])).get(address)
+                if best:
+                    return best, coin
+        except httpx.HTTPError:
+            return None  # fall back to plain search results
+        return None
 
 
 # ------------------------------------------------------------------ trending

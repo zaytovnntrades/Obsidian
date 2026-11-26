@@ -233,3 +233,26 @@ async def test_wallet_tool_end_to_end_with_fake_rpc():
     out = json.loads((await tool.run({"address": WALLET})).get_text_content())
     assert out["sol_balance"] == 2 and out["total_value_usd"] == 130
     assert out["positions"][0]["symbol"] == "MEME" and "rugcheck" in out["positions"][0]["verify_links"]
+
+
+async def test_token_lookup_prefers_coingecko_listed_contract_over_copycats():
+    real = pair(baseToken={"address": "RealWIF", "name": "dogwifhat", "symbol": "$WIF"}, liquidity={"usd": 90_000})
+    copycat = pair(baseToken={"address": "FakeWIF", "name": "Wif Hat", "symbol": "WIF"}, liquidity={"usd": 3_000})
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        path = request.url.path
+        if path == "/latest/dex/search":
+            return httpx.Response(200, json={"pairs": [copycat]})  # search misses the real coin
+        if path == "/api/v3/search":
+            return httpx.Response(200, json={"coins": [{"id": "dogwifcoin", "symbol": "WIF", "market_cap_rank": 192}]})
+        if path == "/api/v3/coins/dogwifcoin":
+            return httpx.Response(200, json={"platforms": {"solana": "RealWIF"}})
+        if path.startswith("/tokens/v1/solana/"):
+            return httpx.Response(200, json=[real])
+        return httpx.Response(404)
+
+    tool = TokenLookupTool(lambda: httpx.AsyncClient(transport=httpx.MockTransport(handler)))
+    out = json.loads((await tool.run({"query": "WIF", "chain": "solana"})).get_text_content())
+    assert out["pairs"][0]["token_address"] == "RealWIF"
+    assert out["pairs"][0]["canonical"]["id"] == "dogwifcoin"
+    assert "OTHER tokens" in out["note"]

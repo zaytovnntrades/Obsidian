@@ -1,0 +1,76 @@
+# Works whether you open the repo root or vault/ as your Obsidian vault.
+filters: 'file.hasTag("coin")'
+
+formulas:
+  days_since: '(today() - date(researched)).days'
+
+properties:
+  note.risk_score:
+    displayName: "Risk"
+  note.risk_level:
+    displayName: "Level"
+  note.verdict:
+    displayName: "2nd opinion"
+  note.market_cap:
+    displayName: "Mkt cap"
+  note.liquidity_usd:
+    displayName: "Liquidity"
+  formula.days_since:
+    displayName: "Days since research"
+
+views:
+  - type: table
+    name: "All coins by risk"
+    sort:
+      - property: risk_score
+        direction: DESC
+    order:
+      - file.name
+      - symbol
+      - chain
+      - risk_level
+      - risk_score
+      - verdict
+      - market_cap
+      - liquidity_usd
+      - status
+      - formula.days_since
+
+  - type: kanban
+    name: "Pipeline"
+    groupBy:
+      property: status
+      direction: ASC
+    groupOrder:
+      - watching
+      - researched
+      - holding
+      - avoid
+      - null
+    order:
+      - file.name
+      - risk_level
+      - verdict
+
+  - type: table
+    name: "Safer shortlist"
+    filters:
+      and:
+        - 'risk_level != "HIGH"'
+        - 'verdict != "DISAGREE"'
+    sort:
+      - property: liquidity_usd
+        direction: DESC
+    order:
+      - file.name
+      - risk_score
+      - liquidity_usd
+      - verdict
+
+  - type: table
+    name: "Stale (re-research)"
+    filters: 'formula.days_since > 7'
+    order:
+      - file.name
+      - researched
+      - formula.days_since
