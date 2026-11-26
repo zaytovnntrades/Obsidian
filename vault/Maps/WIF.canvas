@@ -18,52 +18,62 @@
 			"height": 70,
 			"type": "text",
 			"text": "## Snapshot",
-			"color": "1"
+			"color": "5"
 		},
 		{
 			"id": "e0d0bc41fb736066",
 			"x": 500,
-			"y": -300,
+			"y": -340,
 			"width": 200,
 			"height": 60,
 			"type": "text",
-			"text": "Price **$0.1354**",
-			"color": "1"
+			"text": "Price **$0.1359**",
+			"color": "5"
 		},
 		{
 			"id": "c599f5690edc2007",
 			"x": 500,
-			"y": -210,
+			"y": -260,
 			"width": 220,
 			"height": 60,
 			"type": "text",
-			"text": "Mkt cap **$135,336,237**",
-			"color": "1"
+			"text": "Mkt cap **$135,787,202**",
+			"color": "5"
 		},
 		{
 			"id": "4dd5e285e2a1a9a0",
 			"x": 500,
-			"y": -120,
-			"width": 200,
+			"y": -160,
+			"width": 370,
 			"height": 60,
 			"type": "text",
-			"text": "Liquidity **$98,740**",
-			"color": "1"
+			"text": "Liquidity **$4,086,391** across 30+ pools",
+			"color": "5"
 		},
 		{
 			"id": "ea09e45dbf7e3d5a",
 			"x": 500,
-			"y": -30,
+			"y": -80,
+			"width": 320,
+			"height": 60,
+			"type": "text",
+			"text": "Main pool: raydium ($3,921,158)",
+			"color": "5"
+		},
+		{
+			"id": "bbd68420c1322bae",
+			"x": 500,
+			"y": 20,
 			"width": 200,
 			"height": 60,
 			"type": "text",
 			"text": "24h change **7.52%**",
-			"color": "1"
+			"color": "5"
 		},
 		{
 			"id": "f17a8b8f24268a44",
 			"x": 220,
-			"y": 140,
+			"y": 190,
 			"width": 250,
 			"height": 70,
 			"type": "text",
@@ -73,57 +83,57 @@
 		{
 			"id": "ff186854ee154d5c",
 			"x": 550,
-			"y": 60,
-			"width": 240,
+			"y": 100,
+			"width": 330,
 			"height": 60,
 			"type": "text",
-			"text": "What if? · mcap $3,417",
+			"text": "What if? · liq $3,408 · ELEVATED",
 			"color": "2"
 		},
 		{
 			"id": "0f7545088dd9d246",
 			"x": 550,
-			"y": 150,
-			"width": 230,
+			"y": 200,
+			"width": 320,
 			"height": 60,
 			"type": "text",
-			"text": "Wif Hat · mcap $3,078",
+			"text": "Wif Hat · liq $3,162 · ELEVATED",
 			"color": "2"
 		},
 		{
 			"id": "a0095e0cfc99b678",
 			"x": 550,
-			"y": 240,
-			"width": 220,
+			"y": 280,
+			"width": 310,
 			"height": 60,
 			"type": "text",
-			"text": "Wifhat · mcap $2,623",
+			"text": "Wifhat · liq $2,861 · ELEVATED",
 			"color": "2"
 		},
 		{
 			"id": "630f7d4816761fdd",
 			"x": -420,
-			"y": -300,
+			"y": -350,
 			"width": 200,
 			"height": 70,
 			"type": "text",
-			"text": "## Risk: LOWER (15)",
+			"text": "## Risk: LOWER (0)",
 			"color": "4"
 		},
 		{
 			"id": "c48bf83862fad6ab",
-			"x": -920,
-			"y": -310,
-			"width": 420,
-			"height": 80,
+			"x": -700,
+			"y": -340,
+			"width": 200,
+			"height": 60,
 			"type": "text",
-			"text": "FDV is 1371x liquidity - exit liquidity is shallow",
+			"text": "No red flags fired",
 			"color": "4"
 		},
 		{
 			"id": "10102a933f61fb17",
 			"x": -420,
-			"y": -70,
+			"y": -80,
 			"width": 200,
 			"height": 70,
 			"type": "text",
@@ -132,38 +142,48 @@
 		},
 		{
 			"id": "f1ca31b418b269cf",
-			"x": -700,
-			"y": -200,
-			"width": 200,
+			"x": -870,
+			"y": -250,
+			"width": 370,
 			"height": 60,
 			"type": "text",
-			"text": "Liquidity $98,740",
+			"text": "Liquidity across 30+ pools on 5 DEXes",
 			"color": "4"
 		},
 		{
 			"id": "c551acc2795524d8",
-			"x": -770,
-			"y": -110,
-			"width": 270,
+			"x": -720,
+			"y": -160,
+			"width": 220,
 			"height": 60,
 			"type": "text",
-			"text": "Pair has survived 922 days",
+			"text": "Liquidity $4,086,391",
 			"color": "4"
 		},
 		{
 			"id": "17f5f1d48d20794f",
-			"x": -820,
-			"y": -20,
-			"width": 320,
+			"x": -730,
+			"y": -70,
+			"width": 230,
 			"height": 60,
 			"type": "text",
-			"text": "24h flow 6009 buys / 8437 sells",
+			"text": "Trading for 1102 days",
 			"color": "4"
 		},
 		{
 			"id": "3a5ecd3f789d2dab",
+			"x": -840,
+			"y": 20,
+			"width": 340,
+			"height": 60,
+			"type": "text",
+			"text": "24h flow 10393 buys / 11815 sells",
+			"color": "4"
+		},
+		{
+			"id": "4e970db94849d291",
 			"x": -770,
-			"y": 70,
+			"y": 110,
 			"width": 270,
 			"height": 60,
 			"type": "text",
@@ -173,7 +193,7 @@
 		{
 			"id": "7ea59b9f493f4d41",
 			"x": -440,
-			"y": 200,
+			"y": 240,
 			"width": 220,
 			"height": 70,
 			"type": "text",
@@ -183,7 +203,7 @@
 		{
 			"id": "c9d474512a39f8e4",
 			"x": -720,
-			"y": 160,
+			"y": 200,
 			"width": 200,
 			"height": 60,
 			"type": "text",
@@ -193,7 +213,7 @@
 		{
 			"id": "aba400f5a18fd560",
 			"x": -720,
-			"y": 250,
+			"y": 290,
 			"width": 200,
 			"height": 60,
 			"type": "text",
@@ -209,7 +229,7 @@
 			"toNode": "df7cdbfeeb4d6f6a",
 			"toSide": "left",
 			"toEnd": "none",
-			"color": "1"
+			"color": "5"
 		},
 		{
 			"id": "77661799eb8b83a4",
@@ -218,7 +238,7 @@
 			"toNode": "e0d0bc41fb736066",
 			"toSide": "left",
 			"toEnd": "none",
-			"color": "1"
+			"color": "5"
 		},
 		{
 			"id": "365faa2e5912e2e6",
@@ -227,7 +247,7 @@
 			"toNode": "c599f5690edc2007",
 			"toSide": "left",
 			"toEnd": "none",
-			"color": "1"
+			"color": "5"
 		},
 		{
 			"id": "d8cfcc212add0799",
@@ -236,7 +256,7 @@
 			"toNode": "4dd5e285e2a1a9a0",
 			"toSide": "left",
 			"toEnd": "none",
-			"color": "1"
+			"color": "5"
 		},
 		{
 			"id": "ca9e43a8c7961ef1",
@@ -245,7 +265,16 @@
 			"toNode": "ea09e45dbf7e3d5a",
 			"toSide": "left",
 			"toEnd": "none",
-			"color": "1"
+			"color": "5"
+		},
+		{
+			"id": "ee59e7bfd61511e0",
+			"fromNode": "df7cdbfeeb4d6f6a",
+			"fromSide": "right",
+			"toNode": "bbd68420c1322bae",
+			"toSide": "left",
+			"toEnd": "none",
+			"color": "5"
 		},
 		{
 			"id": "e60456b8eb9716ae",
@@ -342,6 +371,15 @@
 			"fromNode": "10102a933f61fb17",
 			"fromSide": "left",
 			"toNode": "3a5ecd3f789d2dab",
+			"toSide": "right",
+			"toEnd": "none",
+			"color": "4"
+		},
+		{
+			"id": "c2f7b485b7c40a4b",
+			"fromNode": "10102a933f61fb17",
+			"fromSide": "left",
+			"toNode": "4e970db94849d291",
 			"toSide": "right",
 			"toEnd": "none",
 			"color": "4"

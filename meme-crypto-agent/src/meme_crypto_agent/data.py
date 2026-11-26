@@ -10,6 +10,7 @@ Every function takes an ``httpx.AsyncClient`` so tests can inject a fake transpo
 
 from __future__ import annotations
 
+import asyncio
 import os
 from typing import Any
 
@@ -50,6 +51,22 @@ async def dex_top_boosted(client: httpx.AsyncClient) -> list[dict[str, Any]]:
 async def dex_token_pairs(client: httpx.AsyncClient, chain_id: str, token_address: str) -> list[dict[str, Any]]:
     data = await _get_json(client, f"{DEXSCREENER}/token-pairs/v1/{chain_id}/{token_address}")
     return data if isinstance(data, list) else []
+
+
+async def dex_all_pools(
+    client: httpx.AsyncClient, chain_id: str, token_addresses: list[str], concurrency: int = 5
+) -> dict[str, list[dict[str, Any]]]:
+    """Every DEX pool for each token (DexScreener returns up to 30 per token). Failures -> empty list."""
+    sem = asyncio.Semaphore(concurrency)
+
+    async def one(address: str) -> tuple[str, list[dict[str, Any]]]:
+        async with sem:
+            try:
+                return address, await dex_token_pairs(client, chain_id, address)
+            except httpx.HTTPError:
+                return address, []
+
+    return dict(await asyncio.gather(*(one(a) for a in dict.fromkeys(token_addresses))))
 
 
 # ---------------------------------------------------------------- CoinGecko

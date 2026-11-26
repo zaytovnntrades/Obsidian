@@ -7,15 +7,19 @@
       {
         "text": "## Snapshot",
         "key": "snap",
+        "color": "5",
         "children": [
           {
-            "text": "Price **$0.1354**"
+            "text": "Price **$0.1359**"
           },
           {
-            "text": "Mkt cap **$135,336,237**"
+            "text": "Mkt cap **$135,787,202**"
           },
           {
-            "text": "Liquidity **$98,740**"
+            "text": "Liquidity **$4,086,391** across 30+ pools"
+          },
+          {
+            "text": "Main pool: raydium ($3,921,158)"
           },
           {
             "text": "24h change **7.52%**"
@@ -23,12 +27,12 @@
         ]
       },
       {
-        "text": "## Risk: LOWER (15)",
+        "text": "## Risk: LOWER (0)",
         "key": "risk",
         "color": "4",
         "children": [
           {
-            "text": "FDV is 1371x liquidity - exit liquidity is shallow"
+            "text": "No red flags fired"
           }
         ]
       },
@@ -37,13 +41,16 @@
         "color": "4",
         "children": [
           {
-            "text": "Liquidity $98,740"
+            "text": "Liquidity across 30+ pools on 5 DEXes"
           },
           {
-            "text": "Pair has survived 922 days"
+            "text": "Liquidity $4,086,391"
           },
           {
-            "text": "24h flow 6009 buys / 8437 sells"
+            "text": "Trading for 1102 days"
+          },
+          {
+            "text": "24h flow 10393 buys / 11815 sells"
           },
           {
             "text": "Has website/socials listed"
@@ -56,13 +63,13 @@
         "color": "2",
         "children": [
           {
-            "text": "What if? \u00b7 mcap $3,417"
+            "text": "What if? \u00b7 liq $3,408 \u00b7 ELEVATED"
           },
           {
-            "text": "Wif Hat \u00b7 mcap $3,078"
+            "text": "Wif Hat \u00b7 liq $3,162 \u00b7 ELEVATED"
           },
           {
-            "text": "Wifhat \u00b7 mcap $2,623"
+            "text": "Wifhat \u00b7 liq $2,861 \u00b7 ELEVATED"
           }
         ]
       },

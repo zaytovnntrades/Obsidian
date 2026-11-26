@@ -15,7 +15,7 @@ from beeai_framework.tools.errors import ToolInputValidationError
 from pydantic import BaseModel, Field
 
 from meme_crypto_agent import data
-from meme_crypto_agent.risk import score_pair
+from meme_crypto_agent.risk import aggregate_pools, score_pair
 from meme_crypto_agent.tools import _BaseTool, verify_links
 
 BASE58 = re.compile(r"^[1-9A-HJ-NP-Za-km-z]{32,44}$")
@@ -53,8 +53,14 @@ def validate_address(address: str) -> str:
 
 
 def build_portfolio(
-    sol: float, holdings: dict[str, float], pairs: dict[str, dict[str, Any]], min_value_usd: float, limit: int
+    sol: float,
+    holdings: dict[str, float],
+    pairs: dict[str, dict[str, Any]],
+    min_value_usd: float,
+    limit: int,
+    totals: dict[str, dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
+    totals = totals or {}
     sol_pair = pairs.get(data.WRAPPED_SOL_MINT)
     sol_price = float(sol_pair["priceUsd"]) if sol_pair and sol_pair.get("priceUsd") else None
 
@@ -79,8 +85,10 @@ def build_portfolio(
                 "price_usd": price,
                 "value_usd": round(value, 2),
                 "change_24h_pct": (pair.get("priceChange") or {}).get("h24"),
-                "liquidity_usd": (pair.get("liquidity") or {}).get("usd"),
-                "risk": score_pair(pair).as_dict(),
+                "liquidity_usd": (totals[mint]["liquidity_usd"] if mint in totals
+                                  else (pair.get("liquidity") or {}).get("usd")),
+                "pool_count": totals[mint]["pool_count"] if mint in totals else 1,
+                "risk": score_pair(pair, totals=totals.get(mint)).as_dict(),
                 "dexscreener_url": pair.get("url"),
                 "verify_links": verify_links("solana", mint),
             }
@@ -144,7 +152,9 @@ class WalletWatchTool(_BaseTool):
                     f"Could not read the wallet ({e}). The public Solana RPC is rate-limited; retry shortly or "
                     "set SOLANA_RPC_URL to a free Helius/QuickNode endpoint."
                 ) from e
-            pairs = await data.dex_best_pairs(client, "solana", [data.WRAPPED_SOL_MINT, *holdings])
-        result = build_portfolio(sol, holdings, pairs, input.min_value_usd, input.limit)
+            all_pools = await data.dex_all_pools(client, "solana", [data.WRAPPED_SOL_MINT, *holdings])
+        totals = {m: t for m, ps in all_pools.items() if (t := aggregate_pools(ps, m))}
+        pairs = {m: t["top_pool"] for m, t in totals.items()}
+        result = build_portfolio(sol, holdings, pairs, input.min_value_usd, input.limit, totals)
         result["address"] = address
         return JSONToolOutput(result)

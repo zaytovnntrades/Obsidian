@@ -12,7 +12,7 @@ from beeai_framework.tools import JSONToolOutput, Tool, ToolRunOptions
 from pydantic import BaseModel, Field
 
 from meme_crypto_agent import data
-from meme_crypto_agent.risk import summarize_pair
+from meme_crypto_agent.risk import aggregate_pools, summarize_pair
 
 ClientFactory = Callable[[], httpx.AsyncClient]
 
@@ -81,9 +81,28 @@ class TokenLookupTool(_BaseTool):
             canonical_address = (pair.get("baseToken") or {}).get("address")
             pairs = [pair] + [p for p in pairs if (p.get("baseToken") or {}).get("address") != canonical_address]
 
+        # one entry per token (search returns several pairs of the same token), in ranked order
+        tokens: list[dict[str, Any]] = []
+        seen: set[str] = set()
+        for pair in pairs:
+            addr = (pair.get("baseToken") or {}).get("address")
+            if addr and addr not in seen:
+                seen.add(addr)
+                tokens.append(pair)
+            if len(tokens) >= input.limit:
+                break
+        pools: dict[tuple[str, str], list[dict[str, Any]]] = {}
+        async with self._client_factory() as client:
+            for chain_id in {p.get("chainId") for p in tokens if p.get("chainId")}:
+                addrs = [p["baseToken"]["address"] for p in tokens if p.get("chainId") == chain_id]
+                for addr, found in (await data.dex_all_pools(client, chain_id, addrs)).items():
+                    pools[(chain_id, addr)] = found
+
         results = []
-        for pair in pairs[: input.limit]:
-            summary = summarize_pair(pair)
+        for pair in tokens:
+            addr = pair["baseToken"]["address"]
+            totals = aggregate_pools(pools.get((pair.get("chainId"), addr), []), addr)
+            summary = summarize_pair(pair, totals)
             summary["verify_links"] = verify_links(summary["chain"], summary["token_address"])
             if canonical_address and summary["token_address"] == canonical_address:
                 summary["canonical"] = {"source": "CoinGecko", "id": coin["id"], "market_cap_rank": coin.get("market_cap_rank")}

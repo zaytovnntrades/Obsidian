@@ -86,6 +86,12 @@ This is your rulebook as code. Each rule adds points; 0–29 = LOWER, 30–59 = 
 | +300% in 24h | You'd be buying after the move | +10 |
 | No website or socials | Low-effort launch | +10 |
 
+**Scored across all pools.** A token often trades in many pools (WIF: 30+ pools on 5 DEXes). The scorer
+sums liquidity and volume across every pool, counts buys/sells only where the token is the base asset,
+dates the token by its oldest pool, and quotes price from the most liquid pool. Judging by one pool once
+showed WIF with $98K liquidity and a false "FDV is 1371x liquidity" flag; the real figure was ~$4.1M.
+DexScreener returns at most 30 pools per token, so very large coins show "30+".
+
 **High-ROI hack:** edit the constants at the top of `risk.py` to match *your* rules (e.g. "I never touch
 anything under $100k liquidity"). The agent then enforces your discipline on every coin, every time.
 

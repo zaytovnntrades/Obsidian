@@ -256,3 +256,62 @@ async def test_token_lookup_prefers_coingecko_listed_contract_over_copycats():
     assert out["pairs"][0]["token_address"] == "RealWIF"
     assert out["pairs"][0]["canonical"]["id"] == "dogwifcoin"
     assert "OTHER tokens" in out["note"]
+
+
+# ------------------------------------------------------------------ all-pool liquidity
+
+from meme_crypto_agent.risk import aggregate_pools  # noqa: E402
+
+
+def pool(base, quote, liq, buys=10, sells=10, dex="raydium", created_days_ago=400, vol=1000):
+    return pair(
+        baseToken={"address": base, "symbol": base, "name": base}, quoteToken={"address": quote, "symbol": quote},
+        liquidity={"usd": liq}, txns={"h24": {"buys": buys, "sells": sells}}, dexId=dex, volume={"h24": vol},
+        pairCreatedAt=NOW - created_days_ago * 24 * HOUR,
+    )
+
+
+def test_aggregate_sums_all_pools_and_picks_biggest_base_pool():
+    pools = [
+        pool("WIF", "SOL", 98_000, dex="orca"),
+        pool("WIF", "SOL", 3_900_000, buys=500, sells=400, dex="raydium"),
+        pool("WIF", "USDC", 14_000, dex="meteora", created_days_ago=1100),
+        pool("BONK", "WIF", 50_000, buys=999, sells=0),  # WIF is the QUOTE here
+        pool("OTHER", "SOL", 7_000_000),  # unrelated pool - ignored
+    ]
+    t = aggregate_pools(pools, "WIF")
+    assert t["pool_count"] == 4 and t["dex_count"] == 3
+    assert t["liquidity_usd"] == 98_000 + 3_900_000 + 14_000 + 50_000
+    assert t["top_pool"]["dexId"] == "raydium" and t["top_pool_liquidity_usd"] == 3_900_000
+    assert (t["buys_h24"], t["sells_h24"]) == (520, 420)  # quote-side pool excluded from flow
+    assert t["oldest_pair_created_ms"] == pools[2]["pairCreatedAt"]
+    assert aggregate_pools([pool("X", "SOL", 1)], "WIF") is None
+
+
+def test_totals_remove_false_thin_liquidity_flag():
+    main = pool("WIF", "SOL", 98_000)
+    main["fdv"] = 135_000_000  # 1377x the single pool -> false "shallow exit" flag
+    single = score_pair(main, now_ms=NOW)
+    assert any("FDV is" in f for f in single.flags)
+    totals = aggregate_pools([main, pool("WIF", "SOL", 3_900_000)], "WIF")
+    across = score_pair(main, now_ms=NOW, totals=totals)
+    assert not any("FDV is" in f for f in across.flags)
+    assert any("across 2 pools" in p for p in across.positives)
+
+
+async def test_token_lookup_reports_all_pool_totals():
+    small = pool("WIF", "SOL", 98_000, dex="orca")
+    big = pool("WIF", "SOL", 3_900_000, dex="raydium")
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path == "/latest/dex/search":
+            return httpx.Response(200, json={"pairs": [small]})
+        if request.url.path == "/token-pairs/v1/solana/WIF":
+            return httpx.Response(200, json=[small, big])
+        return httpx.Response(404)
+
+    tool = TokenLookupTool(lambda: httpx.AsyncClient(transport=httpx.MockTransport(handler)))
+    out = json.loads((await tool.run({"query": "0xnotaticker" * 3})).get_text_content())
+    first = out["pairs"][0]
+    assert first["dex"] == "raydium" and first["liquidity_usd"] == 3_998_000
+    assert first["pools"]["pool_count"] == 2
