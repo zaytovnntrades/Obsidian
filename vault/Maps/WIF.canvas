@@ -1,0 +1,385 @@
+{
+	"nodes": [
+		{
+			"id": "dc76e9f0c0006e8f",
+			"x": -100,
+			"y": -50,
+			"width": 200,
+			"height": 100,
+			"type": "text",
+			"text": "# $WIF\ndogwifhat · solana",
+			"color": "5"
+		},
+		{
+			"id": "df7cdbfeeb4d6f6a",
+			"x": 220,
+			"y": -170,
+			"width": 200,
+			"height": 70,
+			"type": "text",
+			"text": "## Snapshot",
+			"color": "1"
+		},
+		{
+			"id": "e0d0bc41fb736066",
+			"x": 500,
+			"y": -300,
+			"width": 200,
+			"height": 60,
+			"type": "text",
+			"text": "Price **$0.1354**",
+			"color": "1"
+		},
+		{
+			"id": "c599f5690edc2007",
+			"x": 500,
+			"y": -210,
+			"width": 220,
+			"height": 60,
+			"type": "text",
+			"text": "Mkt cap **$135,336,237**",
+			"color": "1"
+		},
+		{
+			"id": "4dd5e285e2a1a9a0",
+			"x": 500,
+			"y": -120,
+			"width": 200,
+			"height": 60,
+			"type": "text",
+			"text": "Liquidity **$98,740**",
+			"color": "1"
+		},
+		{
+			"id": "ea09e45dbf7e3d5a",
+			"x": 500,
+			"y": -30,
+			"width": 200,
+			"height": 60,
+			"type": "text",
+			"text": "24h change **7.52%**",
+			"color": "1"
+		},
+		{
+			"id": "f17a8b8f24268a44",
+			"x": 220,
+			"y": 140,
+			"width": 250,
+			"height": 70,
+			"type": "text",
+			"text": "## Copycats on same ticker",
+			"color": "2"
+		},
+		{
+			"id": "ff186854ee154d5c",
+			"x": 550,
+			"y": 60,
+			"width": 240,
+			"height": 60,
+			"type": "text",
+			"text": "What if? · mcap $3,417",
+			"color": "2"
+		},
+		{
+			"id": "0f7545088dd9d246",
+			"x": 550,
+			"y": 150,
+			"width": 230,
+			"height": 60,
+			"type": "text",
+			"text": "Wif Hat · mcap $3,078",
+			"color": "2"
+		},
+		{
+			"id": "a0095e0cfc99b678",
+			"x": 550,
+			"y": 240,
+			"width": 220,
+			"height": 60,
+			"type": "text",
+			"text": "Wifhat · mcap $2,623",
+			"color": "2"
+		},
+		{
+			"id": "630f7d4816761fdd",
+			"x": -420,
+			"y": -300,
+			"width": 200,
+			"height": 70,
+			"type": "text",
+			"text": "## Risk: LOWER (15)",
+			"color": "4"
+		},
+		{
+			"id": "c48bf83862fad6ab",
+			"x": -920,
+			"y": -310,
+			"width": 420,
+			"height": 80,
+			"type": "text",
+			"text": "FDV is 1371x liquidity - exit liquidity is shallow",
+			"color": "4"
+		},
+		{
+			"id": "10102a933f61fb17",
+			"x": -420,
+			"y": -70,
+			"width": 200,
+			"height": 70,
+			"type": "text",
+			"text": "## Positives",
+			"color": "4"
+		},
+		{
+			"id": "f1ca31b418b269cf",
+			"x": -700,
+			"y": -200,
+			"width": 200,
+			"height": 60,
+			"type": "text",
+			"text": "Liquidity $98,740",
+			"color": "4"
+		},
+		{
+			"id": "c551acc2795524d8",
+			"x": -770,
+			"y": -110,
+			"width": 270,
+			"height": 60,
+			"type": "text",
+			"text": "Pair has survived 922 days",
+			"color": "4"
+		},
+		{
+			"id": "17f5f1d48d20794f",
+			"x": -820,
+			"y": -20,
+			"width": 320,
+			"height": 60,
+			"type": "text",
+			"text": "24h flow 6009 buys / 8437 sells",
+			"color": "4"
+		},
+		{
+			"id": "3a5ecd3f789d2dab",
+			"x": -770,
+			"y": 70,
+			"width": 270,
+			"height": 60,
+			"type": "text",
+			"text": "Has website/socials listed",
+			"color": "4"
+		},
+		{
+			"id": "7ea59b9f493f4d41",
+			"x": -440,
+			"y": 200,
+			"width": 220,
+			"height": 70,
+			"type": "text",
+			"text": "## Verify before buying",
+			"color": "6"
+		},
+		{
+			"id": "c9d474512a39f8e4",
+			"x": -720,
+			"y": 160,
+			"width": 200,
+			"height": 60,
+			"type": "text",
+			"text": "[bubblemaps_holders](https://app.bubblemaps.io/solana/token/EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm)",
+			"color": "6"
+		},
+		{
+			"id": "aba400f5a18fd560",
+			"x": -720,
+			"y": 250,
+			"width": 200,
+			"height": 60,
+			"type": "text",
+			"text": "[rugcheck](https://rugcheck.xyz/tokens/EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm)",
+			"color": "6"
+		}
+	],
+	"edges": [
+		{
+			"id": "af810a5da01456f5",
+			"fromNode": "dc76e9f0c0006e8f",
+			"fromSide": "right",
+			"toNode": "df7cdbfeeb4d6f6a",
+			"toSide": "left",
+			"toEnd": "none",
+			"color": "1"
+		},
+		{
+			"id": "77661799eb8b83a4",
+			"fromNode": "df7cdbfeeb4d6f6a",
+			"fromSide": "right",
+			"toNode": "e0d0bc41fb736066",
+			"toSide": "left",
+			"toEnd": "none",
+			"color": "1"
+		},
+		{
+			"id": "365faa2e5912e2e6",
+			"fromNode": "df7cdbfeeb4d6f6a",
+			"fromSide": "right",
+			"toNode": "c599f5690edc2007",
+			"toSide": "left",
+			"toEnd": "none",
+			"color": "1"
+		},
+		{
+			"id": "d8cfcc212add0799",
+			"fromNode": "df7cdbfeeb4d6f6a",
+			"fromSide": "right",
+			"toNode": "4dd5e285e2a1a9a0",
+			"toSide": "left",
+			"toEnd": "none",
+			"color": "1"
+		},
+		{
+			"id": "ca9e43a8c7961ef1",
+			"fromNode": "df7cdbfeeb4d6f6a",
+			"fromSide": "right",
+			"toNode": "ea09e45dbf7e3d5a",
+			"toSide": "left",
+			"toEnd": "none",
+			"color": "1"
+		},
+		{
+			"id": "e60456b8eb9716ae",
+			"fromNode": "dc76e9f0c0006e8f",
+			"fromSide": "right",
+			"toNode": "f17a8b8f24268a44",
+			"toSide": "left",
+			"toEnd": "none",
+			"color": "2"
+		},
+		{
+			"id": "75df89021f45c3a1",
+			"fromNode": "f17a8b8f24268a44",
+			"fromSide": "right",
+			"toNode": "ff186854ee154d5c",
+			"toSide": "left",
+			"toEnd": "none",
+			"color": "2"
+		},
+		{
+			"id": "5fff1dc3600f6fa0",
+			"fromNode": "f17a8b8f24268a44",
+			"fromSide": "right",
+			"toNode": "0f7545088dd9d246",
+			"toSide": "left",
+			"toEnd": "none",
+			"color": "2"
+		},
+		{
+			"id": "409259dd041d11cf",
+			"fromNode": "f17a8b8f24268a44",
+			"fromSide": "right",
+			"toNode": "a0095e0cfc99b678",
+			"toSide": "left",
+			"toEnd": "none",
+			"color": "2"
+		},
+		{
+			"id": "0655d08d65584e81",
+			"fromNode": "dc76e9f0c0006e8f",
+			"fromSide": "left",
+			"toNode": "630f7d4816761fdd",
+			"toSide": "right",
+			"toEnd": "none",
+			"color": "4"
+		},
+		{
+			"id": "ef37cd17c552116a",
+			"fromNode": "630f7d4816761fdd",
+			"fromSide": "left",
+			"toNode": "c48bf83862fad6ab",
+			"toSide": "right",
+			"toEnd": "none",
+			"color": "4"
+		},
+		{
+			"id": "57af5977e41b3bae",
+			"fromNode": "dc76e9f0c0006e8f",
+			"fromSide": "left",
+			"toNode": "10102a933f61fb17",
+			"toSide": "right",
+			"toEnd": "none",
+			"color": "4"
+		},
+		{
+			"id": "30d77089111358ae",
+			"fromNode": "10102a933f61fb17",
+			"fromSide": "left",
+			"toNode": "f1ca31b418b269cf",
+			"toSide": "right",
+			"toEnd": "none",
+			"color": "4"
+		},
+		{
+			"id": "f0e1207a66d776ef",
+			"fromNode": "10102a933f61fb17",
+			"fromSide": "left",
+			"toNode": "c551acc2795524d8",
+			"toSide": "right",
+			"toEnd": "none",
+			"color": "4"
+		},
+		{
+			"id": "a04e440196e6e164",
+			"fromNode": "10102a933f61fb17",
+			"fromSide": "left",
+			"toNode": "17f5f1d48d20794f",
+			"toSide": "right",
+			"toEnd": "none",
+			"color": "4"
+		},
+		{
+			"id": "b7889ac4e31cb681",
+			"fromNode": "10102a933f61fb17",
+			"fromSide": "left",
+			"toNode": "3a5ecd3f789d2dab",
+			"toSide": "right",
+			"toEnd": "none",
+			"color": "4"
+		},
+		{
+			"id": "c0fe607e80696c04",
+			"fromNode": "dc76e9f0c0006e8f",
+			"fromSide": "left",
+			"toNode": "7ea59b9f493f4d41",
+			"toSide": "right",
+			"toEnd": "none",
+			"color": "6"
+		},
+		{
+			"id": "5aadad743efb90d5",
+			"fromNode": "7ea59b9f493f4d41",
+			"fromSide": "left",
+			"toNode": "c9d474512a39f8e4",
+			"toSide": "right",
+			"toEnd": "none",
+			"color": "6"
+		},
+		{
+			"id": "1989bab208f0f003",
+			"fromNode": "7ea59b9f493f4d41",
+			"fromSide": "left",
+			"toNode": "aba400f5a18fd560",
+			"toSide": "right",
+			"toEnd": "none",
+			"color": "6"
+		},
+		{
+			"id": "bed1ba74f4e00c61",
+			"fromNode": "f17a8b8f24268a44",
+			"toNode": "7ea59b9f493f4d41",
+			"toEnd": "arrow",
+			"color": "6",
+			"label": "confirm the contract"
+		}
+	]
+}

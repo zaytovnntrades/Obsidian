@@ -28,8 +28,13 @@ For each report, spawn `crypto-critic` with the full report text and the origina
 ## 4. File it
 Spawn ONE `vault-writer` with every report, every review and the clip filenames, and today's date.
 
+## 4b. Map it (optional)
+If the user asked for a map/canvas/visual, or there are 2+ targets, spawn `canvas-mapper` AFTER the
+vault writer, with the note paths it created. One map per coin, or one combined map for a comparison
+or portfolio. It writes `vault/Maps/<Name>.canvas`.
+
 ## 5. Summarize for the user
-Short table: target, risk level, critic verdict, note path. Then call out every DISAGREE verdict and
+Short table: target, risk level, critic verdict, note path (and map path if built). Then call out every DISAGREE verdict and
 every number mismatch - disagreement between the two passes is the signal to slow down.
 End with: "Research only - not financial advice."
 

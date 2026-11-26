@@ -1,0 +1,91 @@
+{
+  "layout": "mindmap",
+  "root": {
+    "text": "# $WIF\ndogwifhat \u00b7 solana",
+    "color": "5",
+    "children": [
+      {
+        "text": "## Snapshot",
+        "key": "snap",
+        "children": [
+          {
+            "text": "Price **$0.1354**"
+          },
+          {
+            "text": "Mkt cap **$135,336,237**"
+          },
+          {
+            "text": "Liquidity **$98,740**"
+          },
+          {
+            "text": "24h change **7.52%**"
+          }
+        ]
+      },
+      {
+        "text": "## Risk: LOWER (15)",
+        "key": "risk",
+        "color": "4",
+        "children": [
+          {
+            "text": "FDV is 1371x liquidity - exit liquidity is shallow"
+          }
+        ]
+      },
+      {
+        "text": "## Positives",
+        "color": "4",
+        "children": [
+          {
+            "text": "Liquidity $98,740"
+          },
+          {
+            "text": "Pair has survived 922 days"
+          },
+          {
+            "text": "24h flow 6009 buys / 8437 sells"
+          },
+          {
+            "text": "Has website/socials listed"
+          }
+        ]
+      },
+      {
+        "text": "## Copycats on same ticker",
+        "key": "cats",
+        "color": "2",
+        "children": [
+          {
+            "text": "What if? \u00b7 mcap $3,417"
+          },
+          {
+            "text": "Wif Hat \u00b7 mcap $3,078"
+          },
+          {
+            "text": "Wifhat \u00b7 mcap $2,623"
+          }
+        ]
+      },
+      {
+        "text": "## Verify before buying",
+        "key": "verify",
+        "color": "6",
+        "children": [
+          {
+            "text": "[bubblemaps_holders](https://app.bubblemaps.io/solana/token/EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm)"
+          },
+          {
+            "text": "[rugcheck](https://rugcheck.xyz/tokens/EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm)"
+          }
+        ]
+      }
+    ]
+  },
+  "links": [
+    {
+      "from": "cats",
+      "to": "verify",
+      "label": "confirm the contract"
+    }
+  ]
+}

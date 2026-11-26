@@ -8,5 +8,6 @@ root, in Obsidian 1.14+ with the Bases core plugin on.
 | `Coins/` | One note per researched token (`SYMBOL-contract6.md`), with risk properties, report, second opinion and a dated history |
 | `Portfolio/` | Daily WalletWatch snapshots (address abbreviated) |
 | `Clips/` | Source pages captured by the web clipper |
+| `Maps/` | Canvas mind maps from the canvas-mapper (`specs/` holds the outline each map was built from) |
 | `Chains/` | Hub notes that coin notes link to |
 | `Watchlist.base` | Dashboard: all coins by risk, kanban pipeline, safer shortlist, stale notes to re-research |
