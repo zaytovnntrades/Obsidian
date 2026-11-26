@@ -18,6 +18,7 @@ from anthropic import beta_async_tool
 
 from meme_crypto_agent.critic import CRITIC_INSTRUCTIONS, build_critic_message
 from meme_crypto_agent.tools import MarketOverviewTool, TokenLookupTool, TrendingTool
+from meme_crypto_agent.wallet import SECRET_WARNING, WalletWatchTool, looks_like_secret
 
 MODEL = "claude-opus-5-5"
 
@@ -70,6 +71,19 @@ async def market_overview(coin_ids: list[str] | None = None, category: str | Non
     return await _call(MarketOverviewTool(), coin_ids=coin_ids, category=category, limit=max(1, min(limit, 50)))
 
 
+@beta_async_tool(name="WalletWatch")
+async def wallet_watch(address: str, min_value_usd: float = 1.0, limit: int = 25) -> str:
+    """Read-only Solana portfolio check from a PUBLIC wallet address: SOL balance, every token with live
+    price and USD value, portfolio share, a red-flag risk score per holding, and alerts.
+
+    Args:
+        address: PUBLIC Solana wallet address (base58). Never a seed phrase or private key.
+        min_value_usd: Hide positions worth less than this (dust).
+        limit: Max positions to return, largest first (1-100).
+    """
+    return await _call(WalletWatchTool(), address=address, min_value_usd=max(0, min_value_usd), limit=max(1, min(limit, 100)))
+
+
 async def _run(client: anthropic.AsyncAnthropic, system: str, content: str) -> str:
     runner = client.beta.messages.tool_runner(
         model=MODEL,
@@ -82,6 +96,7 @@ async def _run(client: anthropic.AsyncAnthropic, system: str, content: str) -> s
             token_lookup,
             trending_radar,
             market_overview,
+            wallet_watch,
             {"type": "web_search_20260209", "name": "web_search", "max_uses": 5},
         ],
         messages=[{"role": "user", "content": content}],
@@ -116,6 +131,8 @@ def main() -> None:
     args = sys.argv[1:]
     second_opinion = "--no-second-opinion" not in args
     question = " ".join(a for a in args if a != "--no-second-opinion") or "What meme coins are trending right now?"
+    if looks_like_secret(question):
+        sys.exit(SECRET_WARNING)
     print(asyncio.run(research(question, second_opinion=second_opinion)))
 
 

@@ -77,3 +77,59 @@ async def gecko_markets(
         params["category"] = category  # e.g. "meme-token"
     data = await _get_json(client, f"{COINGECKO}/coins/markets", params)
     return data if isinstance(data, list) else []
+
+
+# ---------------------------------------------------------------- Solana (read-only)
+
+# Public RPC works but is rate-limited. For heavy use, point SOLANA_RPC_URL at a free
+# Helius / QuickNode / Alchemy endpoint.
+SOLANA_RPC = os.getenv("SOLANA_RPC_URL", "https://api.mainnet-beta.solana.com")
+SPL_TOKEN_PROGRAM = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+TOKEN_2022_PROGRAM = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+WRAPPED_SOL_MINT = "So11111111111111111111111111111111111111112"
+
+
+async def solana_rpc(client: httpx.AsyncClient, method: str, params: list[Any]) -> Any:
+    response = await client.post(SOLANA_RPC, json={"jsonrpc": "2.0", "id": 1, "method": method, "params": params})
+    response.raise_for_status()
+    body = response.json()
+    if body.get("error"):
+        raise httpx.HTTPError(f"Solana RPC {method}: {body['error'].get('message')}")
+    return body.get("result")
+
+
+async def solana_balance_sol(client: httpx.AsyncClient, address: str) -> float:
+    result = await solana_rpc(client, "getBalance", [address])
+    return (result or {}).get("value", 0) / 1e9
+
+
+async def solana_token_holdings(client: httpx.AsyncClient, address: str) -> dict[str, float]:
+    """mint -> amount held, across classic SPL and Token-2022 accounts (zero balances dropped)."""
+    holdings: dict[str, float] = {}
+    for program in (SPL_TOKEN_PROGRAM, TOKEN_2022_PROGRAM):
+        result = await solana_rpc(
+            client, "getTokenAccountsByOwner", [address, {"programId": program}, {"encoding": "jsonParsed"}]
+        )
+        for acc in (result or {}).get("value", []):
+            info = acc.get("account", {}).get("data", {}).get("parsed", {}).get("info", {})
+            amount = (info.get("tokenAmount") or {}).get("uiAmount") or 0
+            if info.get("mint") and amount > 0:
+                holdings[info["mint"]] = holdings.get(info["mint"], 0) + amount
+    return holdings
+
+
+async def dex_best_pairs(client: httpx.AsyncClient, chain_id: str, mints: list[str]) -> dict[str, dict[str, Any]]:
+    """Most liquid DexScreener pair per token address (30 addresses per request)."""
+    best: dict[str, dict[str, Any]] = {}
+    for i in range(0, len(mints), 30):
+        chunk = mints[i : i + 30]
+        data = await _get_json(client, f"{DEXSCREENER}/tokens/v1/{chain_id}/{','.join(chunk)}")
+        for pair in data if isinstance(data, list) else []:
+            mint = (pair.get("baseToken") or {}).get("address")
+            if mint not in chunk:
+                continue
+            liq = (pair.get("liquidity") or {}).get("usd") or 0
+            current = best.get(mint)
+            if current is None or liq > ((current.get("liquidity") or {}).get("usd") or 0):
+                best[mint] = pair
+    return best

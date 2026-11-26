@@ -39,6 +39,7 @@ from beeai_framework.tools.think import ThinkTool
 
 from meme_crypto_agent.critic import CRITIC_INSTRUCTIONS, build_critic_message
 from meme_crypto_agent.tools import MarketOverviewTool, TokenLookupTool, TrendingTool
+from meme_crypto_agent.wallet import SECRET_WARNING, WalletWatchTool, looks_like_secret
 
 INSTRUCTIONS = dedent(
     """\
@@ -50,8 +51,12 @@ INSTRUCTIONS = dedent(
        say so and analyse the one with the most liquidity unless the user gave an address.
     2. "What's hot / find ideas"? -> call TrendingRadar, then TokenLookup on the 2-3 most interesting.
     3. Majors or market context (BTC, ETH, SOL, top memes)? -> MarketOverview (category 'meme-token' for memes).
-    4. Use DuckDuckGo for narrative: news, launches, listings, influencer/KOL mentions, exploits.
-    5. Never invent numbers. If a tool failed, say which data is missing.
+    4. Solana wallet address or "my wallet / portfolio / bags"? -> WalletWatch. Lead with the alerts, then
+       the biggest and riskiest positions. If the user pastes something that looks like a seed phrase or
+       private key, tell them to stop, never repeat it back, and to move funds to a new wallet.
+       Never ask for a seed phrase or private key - WalletWatch only needs the PUBLIC address.
+    5. Use DuckDuckGo for narrative: news, launches, listings, influencer/KOL mentions, exploits.
+    6. Never invent numbers. If a tool failed, say which data is missing.
 
     ## Report format (use these headings)
     **Snapshot** - name, ticker, chain, price, market cap/FDV, 24h change, DexScreener link.
@@ -78,11 +83,12 @@ server = Server()
     default_output_modes=["text", "text/plain"],
     detail=AgentDetail(
         interaction_mode="multi-turn",
-        user_greeting="Give me a ticker, contract address, or ask what's trending.",
+        user_greeting="Give me a ticker, contract address, public wallet address, or ask what's trending.",
         tools=[
             AgentDetailTool(name="TokenLookup", description="DexScreener pair data + automatic red-flag score."),
             AgentDetailTool(name="TrendingRadar", description="CoinGecko trending searches + DexScreener boosts."),
             AgentDetailTool(name="MarketOverview", description="CoinGecko market data for majors & meme sector."),
+            AgentDetailTool(name="WalletWatch", description="Read-only Solana portfolio check from a public address."),
             AgentDetailTool(name="DuckDuckGo", description="News and narrative search."),
         ],
         framework="BeeAI",
@@ -99,6 +105,7 @@ server = Server()
                 "What meme coins are trending right now?",
                 "Check this contract: 0x6982508145454ce325ddbe47a25d4ec3d2311933",
                 "Compare DOGE, SHIB and PEPE",
+                "Check my wallet: <your public Solana address>",
             ],
         )
     ],
@@ -111,6 +118,10 @@ async def meme_crypto_research(
     _e: Annotated[ErrorExtensionServer, ErrorExtensionSpec(ErrorExtensionParams(include_stacktrace=True))],
 ):
     """Researches meme coins and crypto tokens with live DEX + market data and a red-flag scorer."""
+    if looks_like_secret(get_message_text(input)):
+        # Checked before storing or sending anything to the LLM.
+        yield SECRET_WARNING
+        return
     await context.store(input)
     history = [m async for m in context.load_history() if isinstance(m, Message) and m.parts]
     messages = [
@@ -123,7 +134,10 @@ async def meme_crypto_research(
     llm.set_context(llm_ext)
 
     def make_agent(instructions: str) -> RequirementAgent:
-        tools = [TokenLookupTool(), TrendingTool(), MarketOverviewTool(), DuckDuckGoSearchTool(), ThinkTool()]
+        tools = [
+            TokenLookupTool(), TrendingTool(), MarketOverviewTool(), WalletWatchTool(),
+            DuckDuckGoSearchTool(), ThinkTool(),
+        ]
         return RequirementAgent(llm=llm, tools=tools, instructions=instructions)
 
     async def run_pass(agent: RequirementAgent, pass_messages, result: list[str]):

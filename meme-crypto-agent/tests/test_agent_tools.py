@@ -162,3 +162,74 @@ async def test_research_runs_critic_on_report_and_skips_on_refusal(monkeypatch):
     monkeypatch.setattr(run_local, "_run", refused)
     assert "Second Opinion" not in await run_local.research("x")
     assert len(calls) == 1
+
+
+# ------------------------------------------------------------------ WalletWatch
+
+import pytest  # noqa: E402
+
+from meme_crypto_agent.wallet import WalletWatchTool, build_portfolio, looks_like_secret, validate_address  # noqa: E402
+
+WALLET = "BEmX1nfeZT5i4VpSEeZmhiYxpZ9z4Y1LQLjAtPR9c3re"
+SOL_MINT = "So11111111111111111111111111111111111111112"
+
+
+def test_secret_detection():
+    seed = "abandon ability able about above absent absorb abstract absurd abuse access accident"
+    assert looks_like_secret(seed)
+    assert looks_like_secret(f"here is my wallet\n{seed}\nthanks")
+    assert looks_like_secret("4" * 88)
+    assert looks_like_secret("[" + ",".join(["12"] * 64) + "]")
+    # normal questions and public addresses must pass
+    assert not looks_like_secret("what meme coins are trending right now on solana and base today please")
+    assert not looks_like_secret(f"Check my wallet {WALLET}")
+    assert not looks_like_secret("Research DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263")
+
+
+def test_validate_address():
+    assert validate_address(f"  {WALLET} ") == WALLET
+    with pytest.raises(Exception, match="recovery phrase"):
+        validate_address("abandon ability able about above absent absorb abstract absurd abuse access accident")
+    with pytest.raises(Exception, match="Not a valid"):
+        validate_address("0xabc")
+
+
+def test_build_portfolio_values_alerts_and_spam():
+    pairs = {
+        SOL_MINT: pair(baseToken={"address": SOL_MINT, "symbol": "SOL"}, priceUsd="100"),
+        "MEME": pair(baseToken={"address": "MEME", "symbol": "MEME"}, priceUsd="2"),
+        "RUG": pair(
+            baseToken={"address": "RUG", "symbol": "RUG"}, priceUsd="1", liquidity={"usd": 3000},
+            pairCreatedAt=time.time() * 1000 - HOUR, txns={"h24": {"buys": 200, "sells": 0}}, info={},
+        ),
+        "DUST": pair(baseToken={"address": "DUST", "symbol": "DUST"}, priceUsd="0.0001"),
+    }
+    holdings = {"MEME": 300, "RUG": 50, "DUST": 10, "AIRDROP1": 1_000_000}
+    r = build_portfolio(sol=1, holdings=holdings, pairs=pairs, min_value_usd=1, limit=10)
+
+    assert r["sol_value_usd"] == 100 and r["total_value_usd"] == 100 + 600 + 50
+    assert [p["symbol"] for p in r["positions"]] == ["MEME", "RUG"]  # sorted, dust hidden
+    assert r["positions"][0]["portfolio_pct"] == 80.0
+    assert r["unpriced_token_count"] == 1
+    text = " ".join(r["alerts"])
+    assert "concentration" in text and "RUG" in text and "airdrop" in text
+
+
+async def test_wallet_tool_end_to_end_with_fake_rpc():
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.method == "POST":
+            body = json.loads(request.content)
+            if body["method"] == "getBalance":
+                return httpx.Response(200, json={"result": {"value": 2_000_000_000}})
+            token_2022 = body["params"][1]["programId"].startswith("Tokenz")
+            acct = {"account": {"data": {"parsed": {"info": {"mint": "MEME", "tokenAmount": {"uiAmount": 10}}}}}}
+            return httpx.Response(200, json={"result": {"value": [] if token_2022 else [acct]}})
+        return httpx.Response(200, json=[
+            pair(baseToken={"address": SOL_MINT, "symbol": "SOL"}, priceUsd="50"),
+            pair(baseToken={"address": "MEME", "symbol": "MEME"}, priceUsd="3"),
+        ])
+
+    tool = WalletWatchTool(lambda: httpx.AsyncClient(transport=httpx.MockTransport(handler)))
+    out = json.loads((await tool.run({"address": WALLET})).get_text_content())
+    assert out["sol_balance"] == 2 and out["total_value_usd"] == 130
+    assert out["positions"][0]["symbol"] == "MEME" and "rugcheck" in out["positions"][0]["verify_links"]

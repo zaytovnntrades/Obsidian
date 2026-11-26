@@ -13,6 +13,7 @@ Give it a ticker, a contract address, or ask "what's trending?". It pulls live o
 | `TokenLookup` | DexScreener | Any DEX token: price, liquidity, volume, buys/sells, age, socials, **risk score**, verify links |
 | `TrendingRadar` | CoinGecko trending + DexScreener boosts | Idea generation: organic attention vs. *paid* promotion |
 | `MarketOverview` | CoinGecko markets | BTC/ETH/SOL context, top meme coins (`category="meme-token"`) |
+| `WalletWatch` | Solana RPC + DexScreener | **Read-only** portfolio from a PUBLIC address: holdings, USD value, % of portfolio, risk score per coin, alerts |
 | `DuckDuckGo` | Web search | Narrative, news, listings, exploits |
 | `ThinkTool` | (none) | Lets the model plan before answering |
 
@@ -45,6 +46,20 @@ uv run research "What meme coins are trending right now?"
 Optional: set `COINGECKO_API_KEY` (free "Demo" key at coingecko.com/api) for higher rate limits.
 
 Run the offline tests (no network or LLM needed): `uv run pytest`
+
+## WalletWatch (read-only portfolio check)
+Give it the **public** address of a Phantom or Fomo Solana wallet: `uv run research "Check my wallet <address>"`.
+
+You get the SOL balance, every token with live price, USD value and share of the portfolio, a red-flag score
+per holding, and alerts for:
+- **Concentration:** one coin above 50% of the portfolio
+- **HIGH-risk holdings:** the same scorer as TokenLookup
+- **Unpriced tokens:** usually dust or **scam airdrops**. Never interact with them or open links in their names.
+
+**Safety by design:** a public address can only be read, never spent from. The agent never asks for a recovery
+phrase or private key. If a message looks like one (12/24-word phrase, exported key, keypair JSON), it is
+blocked **before** it is sent to the AI and you get a warning to move your funds.
+The public Solana RPC is rate-limited; for heavy use set `SOLANA_RPC_URL` to a free Helius or QuickNode endpoint.
 
 ## Second-opinion mode (on by default)
 After the research report, a second pass with an adversarial brief (`critic.py`) re-checks the numbers
